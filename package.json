@@ -1,0 +1,17 @@
+{
+  "name": "domidocs",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "dev:web": "pnpm --filter @domidocs/web dev",
+    "dev:auth": "pnpm --filter @domidocs/auth-backend dev",
+    "dev:web-api": "pnpm --filter @domidocs/web-backend dev",
+    "cdk": "pnpm --filter @domidocs/cdk cdk"
+  }
+}

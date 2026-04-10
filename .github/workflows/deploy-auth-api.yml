@@ -1,0 +1,32 @@
+name: deploy-auth-api
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Stage name"
+        required: true
+        default: dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-1' }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsc -p packages/contracts/tsconfig.json
+      - working-directory: infra/cdk
+        run: |
+          pnpm run build
+          pnpm exec cdk deploy DomidocsAuthApi-${{ inputs.stage }} --require-approval never -c stage=${{ inputs.stage }}
